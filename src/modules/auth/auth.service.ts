@@ -5,6 +5,18 @@ import { IUser, IAuthSignupPayload, IAuthSignup } from "../../common/interfaces"
 import { BadRequestError, ConflictRequestError, sanitizeFields } from "../../common/utils";
 import * as jwt from "jsonwebtoken";
 import { env } from "src/configs";
+import * as nodemailer from "nodemailer";
+
+
+// const generatePin = () => Math.floor(100000 + Math.random() * 900000).toString();
+console.log(env.mailConfig.MAILING_PASS, env.mailConfig.MAILING_USER , "hjello")
+const transporter = nodemailer.createTransport({
+  service: 'Gmail',
+  auth: {
+    user: env.mailConfig.MAILING_USER,
+    pass: env.mailConfig.MAILING_PASS
+  }
+});
 
 class AuthService {
   async signup(reqBody: IAuthSignupPayload): Promise<IAuthSignup> {
@@ -48,24 +60,107 @@ class AuthService {
         email:reqBody.email
       }
     })
-  if(!user) throw new BadRequestError(AUTH_MESSAGE_CONSTANT.USER_DOESNOT_EXIST)
+    if(!user) throw new BadRequestError(AUTH_MESSAGE_CONSTANT.USER_DOESNOT_EXIST)
 
-  const isPasswordValid = await new BcryptHelper().verifyPassword(reqBody.password, user.password)
+    const isPasswordValid = await new BcryptHelper().verifyPassword(reqBody.password, user.password)
 
-  if(!isPasswordValid) throw new BadRequestError(AUTH_MESSAGE_CONSTANT.INVALID_CREDENTIALS)
+    if(!isPasswordValid) throw new BadRequestError(AUTH_MESSAGE_CONSTANT.INVALID_CREDENTIALS)
 
-  const tokenPayload = {
-    id: user.id,
-    email: user.email,
-    role: user.role,
-  };
-  const token = jwt.sign(tokenPayload, env.jwtConfig.JWT_SECRET_KEY, {expiresIn: "1h"})
+    const tokenPayload = {
+      id: user.id,
+      email: user.email,
+      role: user.role,
+    };
+    const accessToken = jwt.sign(tokenPayload, env.jwtConfig.JWT_SECRET_ACCESSTOKEN_KEY, {expiresIn: "1h"})
+    const refreshToken = jwt.sign(tokenPayload, env.jwtConfig.JWT_SECRET_REFRESHTOKEN_KEY, {expiresIn: "75m"})
+    
     return {
-      token, user
+      accessToken,refreshToken, user
     }
 
   }
+
+  async logout(reqQuery: any):Promise<any>{
+    return "hello"
+  }
+
+  async forgetPassword(reqBody: any):Promise<any>{
+    const { email } = reqBody;
+    console.log(email,"email")
+
+    // try {
+      const user = await Users.findUnique({
+        where: {
+          email: email
+        }
+      });
+    console.log(user,"user")
+
+      if (!user) {
+        throw new BadRequestError("User not found");
+      }
+
+      const pin =  new BcryptHelper().generatePin();
+      const tokenPayload = {
+        userId: user.id,
+        pin: pin,
+        email: user.email, 
+      };
+      const token = jwt.sign(tokenPayload, env.jwtConfig.JWT_SECRET_RESET_PIN_KEY, { expiresIn: "5m" });
+      console.log("debug")
+
+      const mailOptions = {
+        from: `${env.mailConfig.MAILING_USER}`,
+        to: `${email}`,
+        subject: 'Password Reset PIN',
+        text: `Your password reset PIN is ${pin}. It will expire in five minutes.`
+      };
+
+      await transporter.sendMail(mailOptions);
+      console.log("debug2")
+
+
+      return { message: 'PIN sent to email', token };
+
+    // } catch (error) {
+    //   throw new BadRequestError('Server error');
+    // }
+  }
+
+  async resetPassword(reqBody: any): Promise<any> {
+    const { email, otp, token, newPassword } = reqBody;
+    console.log(reqBody, "reqBody")
+
+    // try {
+      const decodedToken: any = jwt.verify(token, env.jwtConfig.JWT_SECRET_RESET_PIN_KEY) as jwt.JwtPayload;
+      console.log(decodedToken,"decodedtoken")
+      if (parseInt(decodedToken.pin) !== otp) {
+        throw new BadRequestError('Invalid or expired PIN');
+      }
+
+      const user = await Users.findUnique({ where: { email } });
+      if (!user) {
+        throw new BadRequestError('User not found');
+      }
+
+      const updatePassword = await new  BcryptHelper().generateHashPassword(newPassword)
+
+      await Users.update({
+        where: { email: decodedToken.email },
+        data: { password: updatePassword },
+      });
+
+      return { message: 'Password reset successfully' };
+
+    // } catch (error) {
+    //   if (error instanceof Error && error.name === 'TokenExpiredError') {
+    //     throw new BadRequestError('Token expired');
+    //   }
+    //   throw new BadRequestError(error.name);
+    // }
+  }
 }
+
 
 const authService = new AuthService();
 export default authService;
