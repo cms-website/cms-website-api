@@ -65,6 +65,11 @@ export default {
       },
       "/menu": {
         get: {
+          security : [
+            {
+              bearerAuth: []
+            }
+          ],
           tags: ["Menu"],
           summary: "Get all menus",
           description: "API to fetch all menus",

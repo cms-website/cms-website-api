@@ -83,7 +83,7 @@ export default {
           }
         }
       },
-      "/auth/login": {
+      "/auth/getToken": {
         post: {
           tags: ["Auth"],
           summary: "User login API",
@@ -145,6 +145,148 @@ export default {
                       message: {
                         type: "string",
                         example: AUTH_MESSAGE_CONSTANT.UNABLE_TO_LOGIN
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/auth/forgetPassword": {
+        post: {
+          tags: ["Auth"],
+          summary: "User forget password API",
+          description: "API for user to reset the password",
+          operationId: "forgetPassword",
+          requestBody: {
+            description: "Payload for forget password",
+            required: true,
+            content: {
+              "application/json": {
+                schema: {
+                  $ref: "#/components/schemas/ForgetPasswordRequest"
+                }
+              }
+            }
+          },
+          responses: {
+            200: {
+              description: "OTP sent successfully",
+              content: {
+                "application/json": {
+                  schema: {
+                    type: "object",
+                    properties: {
+                      success: {
+                        type: "boolean",
+                        example: true
+                      },
+                      message: {
+                        type: "string",
+                        example: "OTP sent to email"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            404: {
+              description: "User not found",
+              content: {
+                "application/json": {
+                  schema: {
+                    type: "object",
+                    properties: {
+                      success: {
+                        type: "boolean",
+                        example: false
+                      },
+                      message: {
+                        type: "string",
+                        example: "User not found"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/auth/resetPassword": {
+        post: {
+          tags: ["Auth"],
+          summary: "User reset password API",
+          description: "API for user to set a new password using OTP",
+          operationId: "resetPassword",
+          requestBody: {
+            description: "Payload for reset password",
+            required: true,
+            content: {
+              "application/json": {
+                schema: {
+                  $ref: "#/components/schemas/ResetPasswordRequest"
+                }
+              }
+            }
+          },
+          responses: {
+            200: {
+              description: "Password reset successfully",
+              content: {
+                "application/json": {
+                  schema: {
+                    type: "object",
+                    properties: {
+                      success: {
+                        type: "boolean",
+                        example: true
+                      },
+                      message: {
+                        type: "string",
+                        example: "Password has been reset"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            400: {
+              description: "Invalid or expired OTP",
+              content: {
+                "application/json": {
+                  schema: {
+                    type: "object",
+                    properties: {
+                      success: {
+                        type: "boolean",
+                        example: false
+                      },
+                      message: {
+                        type: "string",
+                        example: "Invalid or expired OTP"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            404: {
+              description: "User not found",
+              content: {
+                "application/json": {
+                  schema: {
+                    type: "object",
+                    properties: {
+                      success: {
+                        type: "boolean",
+                        example: false
+                      },
+                      message: {
+                        type: "string",
+                        example: "User not found"
                       }
                     }
                   }
@@ -328,8 +470,44 @@ export default {
               }
             }
           }
+        },
+        ForgetPasswordRequest: {
+          type: "object",
+          properties: {
+            email: {
+              type: "string",
+              required: true,
+              example: "krimson@gmail.com"
+            }
+          }
+        },
+        ResetPasswordRequest: {
+          type: "object",
+          properties: {
+            email: {
+              type:"string",
+              required: true,
+              example:"krimson@gmail.com"
+            },
+            token: {
+              type: "string",
+              required: true,
+              example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+            },
+            otp: {
+              type: "number",
+              required: true,
+              example: 123456
+            },
+            newPassword: {
+              type: "string",
+              required: true,
+              example: "newpassword@123"
+            }
+          }
         }
       }
     }
   }
-};
+}
+
