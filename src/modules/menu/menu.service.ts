@@ -1,9 +1,7 @@
  import {Menu } from "../../helpers";
 import { AUTH_MESSAGE_CONSTANT } from "../../common/constants";
 import { BadRequestError} from "../../common/utils";
-
 class MenuService {
-
   async create(reqBody: any): Promise<any> {
     try {  
       const menu = await Menu.create({
@@ -20,7 +18,6 @@ class MenuService {
       if (error instanceof BadRequestError) {
         throw error;
       } else {
-        console.error('Unexpected error:', error);
         throw new BadRequestError('An unexpected error occurred while creating the menu');
       }
     }
@@ -28,7 +25,6 @@ class MenuService {
 
   async getMenu(menuType: any): Promise<any> {
     const allMenus = await Menu.findMany(); 
-
     const groupedMenus: Record<string, any[]> = {};
     allMenus.forEach((menu :any) => {
       const parentId = menu.parentId || 'root'; 
@@ -53,7 +49,6 @@ class MenuService {
         children: formatMenu(menu.id) 
       }));
     };
-  
     return formatMenu(null);
   }
 }
