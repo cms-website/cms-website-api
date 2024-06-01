@@ -336,6 +336,11 @@ export default {
               type: "string",
               required: true,
               example: "9847053191"
+            },
+            roleId: {
+              type: "string",
+              required: true,
+              example: "47e96982-b900-4db3-a956-210580358576"
             }
           }
         },

@@ -3,7 +3,6 @@ import { HttpStatus } from "../enums";
 
 abstract class ApiResponse {
   constructor(protected status: HttpStatus, protected success: boolean, protected message: string) {}
-
   protected prepareResponse<T extends ApiResponse>(res: Response, response: T, headers: { [key: string]: string }): Response {
     return res.status(this.status).json(ApiResponse.sanitizeResponse(response));
   }

@@ -1,15 +1,12 @@
 import { BcryptHelper, Users } from "../../helpers";
 import { signupValidation } from "./auth.validation";
 import { AUTH_MESSAGE_CONSTANT } from "../../common/constants";
-import { IUser, IAuthSignupPayload, IAuthSignup } from "../../common/interfaces";
+import { IAuthSignupPayload, IAuthSignup } from "../../common/interfaces";
 import { BadRequestError, ConflictRequestError, sanitizeFields } from "../../common/utils";
-import * as jwt from "jsonwebtoken";
+import jwt, {JwtPayload, JsonWebTokenError, TokenExpiredError } from "jsonwebtoken";
 import { env } from "src/configs";
 import * as nodemailer from "nodemailer";
 
-
-// const generatePin = () => Math.floor(100000 + Math.random() * 900000).toString();
-console.log(env.mailConfig.MAILING_PASS, env.mailConfig.MAILING_USER , "hjello")
 const transporter = nodemailer.createTransport({
   service: 'Gmail',
   auth: {
@@ -29,7 +26,7 @@ class AuthService {
 
     const sanitizeUser = sanitizeFields<IAuthSignupPayload>(value, ["confirmPassword"]);
     const hashPassword = await new BcryptHelper().generateHashPassword(sanitizeUser.password);
-
+    console.log(sanitizeUser,"data")
     const user = await Users.create({
       data: { ...sanitizeUser, password: hashPassword },
       select: {
@@ -49,7 +46,7 @@ class AuthService {
     return user;
   }
 
-  private async findUserByUnique(query: { [key: string]: string }): Promise<IUser | null> {
+   async findUserByUnique(query: { [key: string]: string }): Promise<any | null> {
     return Users.findUnique({ where: query });
   }
 
@@ -69,7 +66,7 @@ class AuthService {
     const tokenPayload = {
       id: user.id,
       email: user.email,
-      role: user.role,
+      password:user.password
     };
     const accessToken = jwt.sign(tokenPayload, env.jwtConfig.JWT_SECRET_ACCESSTOKEN_KEY, {expiresIn: "1h"})
     const refreshToken = jwt.sign(tokenPayload, env.jwtConfig.JWT_SECRET_REFRESHTOKEN_KEY, {expiresIn: "75m"})
@@ -84,11 +81,9 @@ class AuthService {
     return "hello"
   }
 
-  async forgetPassword(reqBody: any):Promise<any>{
-    const { email } = reqBody;
-    console.log(email,"email")
+  async forgetPassword(email: any):Promise<any>{
 
-    // try {
+    try {
       const user = await Users.findUnique({
         where: {
           email: email
@@ -107,7 +102,6 @@ class AuthService {
         email: user.email, 
       };
       const token = jwt.sign(tokenPayload, env.jwtConfig.JWT_SECRET_RESET_PIN_KEY, { expiresIn: "5m" });
-      console.log("debug")
 
       const mailOptions = {
         from: `${env.mailConfig.MAILING_USER}`,
@@ -122,42 +116,48 @@ class AuthService {
 
       return { message: 'PIN sent to email', token };
 
-    // } catch (error) {
-    //   throw new BadRequestError('Server error');
-    // }
+    } catch (error) {
+      throw new BadRequestError('Server error');
+    }
   }
 
-  async resetPassword(reqBody: any): Promise<any> {
-    const { email, otp, token, newPassword } = reqBody;
-    console.log(reqBody, "reqBody")
-
-    // try {
-      const decodedToken: any = jwt.verify(token, env.jwtConfig.JWT_SECRET_RESET_PIN_KEY) as jwt.JwtPayload;
-      console.log(decodedToken,"decodedtoken")
-      if (parseInt(decodedToken.pin) !== otp) {
-        throw new BadRequestError('Invalid or expired PIN');
+  async resetPassword(email:any, otp:any, token:any): Promise<any> {
+    try {
+      console.log(email, otp,token,"hello")
+        const decodedToken: any = jwt.verify(token, env.jwtConfig.JWT_SECRET_RESET_PIN_KEY) as JwtPayload;
+        const isValidPin = decodedToken.pin == otp
+        console.log(isValidPin,"isvalid")
+        return {Message:"validated", isValidPin } 
+    } catch (error) {
+      if(error instanceof JsonWebTokenError){
+        return {error, message:"Invalid token."}
       }
+      if(error instanceof TokenExpiredError){
+        return {error}
+      }
+      
+    }
 
+     
+  }
+  async changePassword(email:any, newPassword:any): Promise<any> {
+    try{
       const user = await Users.findUnique({ where: { email } });
-      if (!user) {
-        throw new BadRequestError('User not found');
+        if (!user) {
+          throw new BadRequestError('User not found');
+        }
+        const updatePassword = await new  BcryptHelper().generateHashPassword(newPassword)
+        await Users.update({
+          where: { email: email },
+          data: { password: updatePassword },
+        });
+        return { message: 'Password reset successfully' };
+    } catch (error) {
+      if (error instanceof Error && error.name === 'TokenExpiredError') {
+        throw new BadRequestError('Token expired');
       }
-
-      const updatePassword = await new  BcryptHelper().generateHashPassword(newPassword)
-
-      await Users.update({
-        where: { email: decodedToken.email },
-        data: { password: updatePassword },
-      });
-
-      return { message: 'Password reset successfully' };
-
-    // } catch (error) {
-    //   if (error instanceof Error && error.name === 'TokenExpiredError') {
-    //     throw new BadRequestError('Token expired');
-    //   }
-    //   throw new BadRequestError(error.name);
-    // }
+      throw new Error("Server error occured.");
+    }
   }
 }
 

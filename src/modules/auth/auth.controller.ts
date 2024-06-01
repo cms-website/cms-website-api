@@ -35,13 +35,21 @@ export class AuthController {
   }
 
   async forgetPassword(req:Request, res:Response, next: NextFunction) : Promise<Response>{
-    const data = await authService.forgetPassword(req.body)
+    const {email } = req.query
+    console.log(email, "backemail")
+    const data = await authService.forgetPassword(email)
     return new SuccessCreatedResponse<IAuthSignup>(AUTH_MESSAGE_CONSTANT.USER_CREATED_SUCCESSFULLY, data).sendResponse(res);
   }
   async resetPassword(req:Request, res:Response, next: NextFunction) : Promise<Response>{
-    const data = await authService.resetPassword(req.body)
+    console.log(req.body,"helloroot")
+    const { email,  token, otp, } = req.body
+    const data = await authService.resetPassword(email, otp, token)
     return new SuccessCreatedResponse<IAuthSignup>(AUTH_MESSAGE_CONSTANT.USER_CREATED_SUCCESSFULLY, data).sendResponse(res);
-
+  }
+  async changePassword(req:Request, res:Response, next: NextFunction) : Promise<Response>{
+    const { email,  newPassword } = req.body
+    const data = await authService.changePassword(email, newPassword)
+    return new SuccessCreatedResponse<IAuthSignup>(AUTH_MESSAGE_CONSTANT.USER_CREATED_SUCCESSFULLY, data).sendResponse(res);
   }
 }
 
@@ -51,4 +59,5 @@ export default {
   logout: catchAsyncHandler(new AuthController().logout),
   forgetPassword: catchAsyncHandler(new AuthController().forgetPassword),
   resetPassword: catchAsyncHandler(new AuthController().resetPassword),
+  changePassword: catchAsyncHandler(new AuthController().changePassword),
 };
