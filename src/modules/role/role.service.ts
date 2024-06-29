@@ -4,7 +4,6 @@ import { ROLE_MESSAGE_CONSTANT } from "src/common/constants";
 
 
 class RoleService {
-    // Create a new role
     async create(reqBody: any): Promise<any> {
       try {
         const role = await Role.create({
@@ -14,7 +13,7 @@ class RoleService {
           }
         });
         if (!role) {
-          throw new BadRequestError(ROLE_MESSAGE_CONSTANT.UNABLE_TO_CREATE_ROLE);
+          throw new BadRequestError(ROLE_MESSAGE_CONSTANT.ROLE_NOT_FOUND);
         }
         return role;
       } catch (error) {
@@ -26,7 +25,6 @@ class RoleService {
       }
     }
   
-    // Retrieve a role by ID
     async getRoleById(roleId: string): Promise<any> {
       console.log(roleId, "roleId")
       try {
@@ -42,18 +40,16 @@ class RoleService {
       }
     }
   
-    // Retrieve all roles
     async getAllRoles(): Promise<any[]> {
       try {
         const roles = await Role.findMany();
         console.log(roles,'roles')
         return roles;
       } catch (error) {
-        throw new BadRequestError('An unexpected error occurred while retrieving roles');
+        throw new BadRequestError(ROLE_MESSAGE_CONSTANT.UNABLE_TO_RETRIEVE_ROLE);
       }
     }
   
-    // Update a role
     async update(roleId: string, updateData: any): Promise<any> {
       try {
         const updatedRole = await Role.update({
@@ -69,7 +65,6 @@ class RoleService {
       }
     }
   
-    // Delete a role
     async delete(roleId: string): Promise<any> {
       try {
         const deletedRole = await Role.delete({
