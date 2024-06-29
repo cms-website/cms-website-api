@@ -17,7 +17,6 @@ abstract class ApiResponse {
     // @ts-expect-error
     delete clone.status;
     for (const i in clone) if (typeof clone[i] === "undefined") delete clone[i];
-
     return clone;
   }
 }
