@@ -1,4 +1,4 @@
-import { BcryptHelper, Users } from "../../helpers";
+import { BcryptHelper, Users} from "../../helpers";
 import { signupValidation } from "./auth.validation";
 import { AUTH_MESSAGE_CONSTANT } from "../../common/constants";
 import { IAuthSignupPayload, IAuthSignup } from "../../common/interfaces";
@@ -55,8 +55,12 @@ class AuthService {
     const user = await Users.findUnique({
       where:{
         email:reqBody.email
+      },
+      include:{
+        role: true
       }
     })
+    console.log(user, "user")
     if(!user) throw new BadRequestError(AUTH_MESSAGE_CONSTANT.USER_DOESNOT_EXIST)
 
     const isPasswordValid = await new BcryptHelper().verifyPassword(reqBody.password, user.password)
@@ -111,10 +115,8 @@ class AuthService {
       };
 
       await transporter.sendMail(mailOptions);
-      console.log("debug2")
 
-
-      return { message: 'PIN sent to email', token };
+      return token;
 
     } catch (error) {
       throw new BadRequestError('Server error');
