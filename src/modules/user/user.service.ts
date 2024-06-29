@@ -4,7 +4,21 @@ import { BadRequestError} from "../../common/utils";
 class UserService {
   async getAllUser(): Promise<any> {
     try {  
-      const users = await Users.findMany()
+      const users = await Users.findMany({select:{
+        id:true,
+        email:true,
+        avatar:true,
+        firstName:true,
+        lastName:true,
+        username:true,
+        phone:true,
+        status:true,
+        roleId:true,
+        deleted:true,
+        createdAt:true,
+        updatedAt:true,
+        deletedAt:true
+      }})
       if (!users) {
         throw new BadRequestError(AUTH_MESSAGE_CONSTANT.UNABLE_TO_CREATE_USER);
       }
@@ -20,6 +34,7 @@ class UserService {
 
   async getUserById(id: any): Promise<any> {
     try {
+      if (!id) throw new BadRequestError("Please provide User Id")
         const user = await Users.findUnique({
             where:{
                 id:id
@@ -33,6 +48,7 @@ class UserService {
   }
 
   async deleteUserById(id:any):Promise<any>{
+    if (!id) throw new BadRequestError("Please provide User Id")
     try {
         const user = Users.delete(id)
         return user
@@ -41,6 +57,7 @@ class UserService {
     }
   }
   async updateUser(id: any, data: any): Promise<any> {
+    if (!id) throw new BadRequestError("Please provide User Id")
     try {
       const user = await Users.update({
         where: { id: id },
