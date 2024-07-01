@@ -51,6 +51,16 @@ class MenuService {
     };
     return formatMenu(null);
   }
+
+  async deleteMenu(menuId: any):Promise<any>{
+    try {
+      if(!menuId){
+        // throw new new BadRequestError("efedf")
+      }
+    } catch (error) {
+      
+    }
+  }
 }
 
 const menuService = new MenuService();

@@ -6,7 +6,7 @@ export const AUTH_MESSAGE_CONSTANT = {
   UNABLE_TO_CREATE_USER: "Unable to create user.",
   USER_CREATED_SUCCESSFULLY: "User created Successfully.",
   LOGIN_SUCCESS: "YOU LOGGED IS SUCCESSFULLY",
-  INVALID_CREDENTIALS: "Invaid Credentials",
+  INVALID_CREDENTIALS: "Inval id Credentials",
   UNABLE_TO_LOGIN: "Unable to login",
   USER_DOESNOT_EXIST:"User Does not exist",
   USER_LOGIN_SUCCESS:"User logged in successfully",

@@ -19,14 +19,11 @@ class AuthService {
   async signup(reqBody: IAuthSignupPayload): Promise<IAuthSignup> {
     const { error, value } = signupValidation(reqBody);
     if (error) throw new BadRequestError(error.details[0].message);
-
     if (value.password !== value.confirmPassword) throw new BadRequestError(AUTH_MESSAGE_CONSTANT.PASSWORD_AND_CONFIRM_PASSWORD_NOT_MATCHED);
     let userExits = await this.findUserByUnique({ email: value.email });
     if (userExits) throw new ConflictRequestError(AUTH_MESSAGE_CONSTANT.EMAIL_ALREADY_TAKEN);
-
     const sanitizeUser = sanitizeFields<IAuthSignupPayload>(value, ["confirmPassword"]);
     const hashPassword = await new BcryptHelper().generateHashPassword(sanitizeUser.password);
-    console.log(sanitizeUser,"data")
     const user = await Users.create({
       data: { ...sanitizeUser, password: hashPassword },
       select: {
@@ -60,7 +57,6 @@ class AuthService {
         role: true
       }
     })
-    console.log(user, "user")
     if(!user) throw new BadRequestError(AUTH_MESSAGE_CONSTANT.USER_DOESNOT_EXIST)
 
     const isPasswordValid = await new BcryptHelper().verifyPassword(reqBody.password, user.password)
