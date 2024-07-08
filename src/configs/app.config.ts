@@ -6,7 +6,6 @@ export default {
     APP_URL: env.APP_URL,
     NODE_ENV: env.NODE_ENV, 
     APP_NAME: env.APP_NAME,
-
   },
   dbConfig: {
     DATABASE_URL: env.DATABASE_URL

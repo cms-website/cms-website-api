@@ -6,7 +6,6 @@ import path from "path";
 dotenv.config({ path: path.join(__dirname, ".env") });
 export const SECRET_KEY: Secret = `${process.env.JWT_SECRET_ACCESSTOKEN_KEY}`; 
 export const jwtTokenMiddleware = async (req: Request, res: Response, next: NextFunction): Promise<any> => {
-  console.log('hello')
   try {
     const token = req.header("Authorization")?.replace("Bearer ", "");
     if (!token)  throw new Error("Token missing");
@@ -17,8 +16,8 @@ export const jwtTokenMiddleware = async (req: Request, res: Response, next: Next
         id: id
       }
     });
-
-    if(userProfile?.deleted) throw new Error("User is deleted")
+   
+   if(userProfile?.deleted) throw new Error("User is deleted")
     next();
   } catch(error ) {
     if (error instanceof JsonWebTokenError){

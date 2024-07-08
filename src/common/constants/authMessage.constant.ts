@@ -6,7 +6,18 @@ export const AUTH_MESSAGE_CONSTANT = {
   UNABLE_TO_CREATE_USER: "Unable to create user.",
   USER_CREATED_SUCCESSFULLY: "User created Successfully.",
   LOGIN_SUCCESS: "YOU LOGGED IS SUCCESSFULLY",
-  INVALID_CREDENTIALS: "Invaid Credentials",
+  INVALID_CREDENTIALS: "Invalid Credentials",
   UNABLE_TO_LOGIN: "Unable to login",
-  USER_DOESNOT_EXIST:"User Does not exist"
+  USER_DOESNOT_EXIST:"User Does not exist",
+  USER_LOGIN_SUCCESS:"User logged in successfully",
 };
+
+export const USER_MESSAGE_CONSTANT = {
+  ALL_USER_FETCHED_SUCCESSFULLY:"All user Fetched Successfully",
+  USER_FETCHED_SUCCESSFULLY:"User Fetched Successfully",
+  USER_DELETED_SUCCESSFULLY:"User deleted successfully",
+  USER_UPDATED_SUCCESSFULLY:"User updated successfully",
+  USER_STATUS_UPDATED_SUCCESSFULLY:"User updated successfully"
+}
+
+

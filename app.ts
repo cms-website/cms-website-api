@@ -4,7 +4,6 @@ import morgan from "morgan";
 import helmet from "helmet";
 import path from "path";
 import swaggerUi from "swagger-ui-express";
-
 import indexRouter from "src/routes";
 import { errorHandler } from "src/middlewares";
 import swaggerDefinitions from "swagger.definitions";

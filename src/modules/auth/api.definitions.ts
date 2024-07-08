@@ -160,17 +160,17 @@ export default {
           summary: "User forget password API",
           description: "API for user to reset the password",
           operationId: "forgetPassword",
-          requestBody: {
-            description: "Payload for forget password",
-            required: true,
-            content: {
-              "application/json": {
-                schema: {
-                  $ref: "#/components/schemas/ForgetPasswordRequest"
-                }
-              }
+          parameters: [
+            {
+              name: "email",
+              in: "query",
+              required: true,
+              schema: {
+                $ref: "#/components/schemas/ForgetPasswordRequest"
+              },
+              description: "Email of the user who wants to reset the password"
             }
-          },
+          ],
           responses: {
             200: {
               description: "OTP sent successfully",
@@ -305,7 +305,7 @@ export default {
             firstName: {
               type: "string",
               required: true,
-              example: "Krishana"
+              example: "Krishna"
             },
             lastName: {
               type: "string",
@@ -317,25 +317,20 @@ export default {
               required: true,
               example: "krimson"
             },
-            password: {
-              type: "string",
-              required: true,
-              example: "krimson@123456"
-            },
-            confirmPassword: {
-              type: "string",
-              required: true,
-              example: "krimson@123456"
-            },
             email: {
               type: "string",
               required: true,
-              example: "krimson@gmail.com"
+              example: "uniqkrimson100@gmail.com"
             },
             phone: {
               type: "string",
               required: true,
-              example: "9847053191"
+              example: "9800768098"
+            },
+            roleId: {
+              type: "string",
+              required: true,
+              example: "47e96982-b900-4db3-a956-210580358576"
             }
           }
         },
@@ -477,7 +472,7 @@ export default {
             email: {
               type: "string",
               required: true,
-              example: "krimson@gmail.com"
+              example: "uniqkrimson100@gmail.com"
             }
           }
         },

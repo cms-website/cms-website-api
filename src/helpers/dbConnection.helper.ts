@@ -3,11 +3,11 @@ import { env } from "../configs";
 
 const prisma = new PrismaClient({
   datasources: {
-    db: {
+    db: {  
       url: env.dbConfig.DATABASE_URL
     }
   }
 });
 
 export { prisma };
-export const { users: Users, menu:Menu } = prisma;
+export const { users: Users, menu: Menu, role: Role } = prisma;

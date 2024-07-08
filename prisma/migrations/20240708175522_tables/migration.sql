@@ -1,5 +1,5 @@
 -- CreateEnum
-CREATE TYPE "Role" AS ENUM ('USER', 'ADMIN', 'STAFF');
+CREATE TYPE "roleType" AS ENUM ('USER', 'ADMIN', 'STAFF');
 
 -- CreateEnum
 CREATE TYPE "MenuType" AS ENUM ('TOPMENU', 'SIDEMENU', 'FOOTERMENU');
@@ -12,9 +12,9 @@ CREATE TABLE "Users" (
     "username" TEXT NOT NULL,
     "phone" TEXT NOT NULL,
     "status" BOOLEAN NOT NULL DEFAULT false,
-    "role" "Role" NOT NULL DEFAULT 'USER',
+    "roleId" TEXT,
     "email" TEXT NOT NULL,
-    "password" TEXT NOT NULL,
+    "password" TEXT,
     "avatar" TEXT,
     "deleted" BOOLEAN NOT NULL DEFAULT false,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -22,6 +22,19 @@ CREATE TABLE "Users" (
     "deletedAt" TIMESTAMP(3),
 
     CONSTRAINT "Users_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "roles" (
+    "id" TEXT NOT NULL,
+    "name" TEXT NOT NULL,
+    "description" TEXT,
+    "type" "roleType" NOT NULL,
+    "permissions" TEXT[],
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "roles_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -40,9 +53,6 @@ CREATE TABLE "Menu" (
 );
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Users_id_key" ON "Users"("id");
-
--- CreateIndex
 CREATE UNIQUE INDEX "Users_username_key" ON "Users"("username");
 
 -- CreateIndex
@@ -50,6 +60,12 @@ CREATE UNIQUE INDEX "Users_phone_key" ON "Users"("phone");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Users_email_key" ON "Users"("email");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "roles_name_key" ON "roles"("name");
+
+-- AddForeignKey
+ALTER TABLE "Users" ADD CONSTRAINT "Users_roleId_fkey" FOREIGN KEY ("roleId") REFERENCES "roles"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Menu" ADD CONSTRAINT "Menu_parentId_fkey" FOREIGN KEY ("parentId") REFERENCES "Menu"("id") ON DELETE SET NULL ON UPDATE CASCADE;

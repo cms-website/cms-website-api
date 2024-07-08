@@ -11,28 +11,53 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum userStatus {
+  INACTIVE
+  ACTIVE
+  DELETED
+  BLOCKED
+}
 model Users {
-  id        String  @id @unique @default(uuid())
+  id        String   @id @default(uuid())
   firstName String
   lastName  String
-  username  String  @unique
-  phone     String  @unique
-  status    Boolean @default(false)
-  role      Role    @default(USER)
-  email     String  @unique
-  password  String
+  username  String   @unique
+  phone     String   @unique
+  roleId    String?  // Define as String
+  role      Role?    @relation(fields: [roleId], references: [id])
+  email     String   @unique
+  password  String?
+  status    userStatus
   avatar    String?
-  deleted   Boolean @default(false)
-
+  deleted   Boolean  @default(false)
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
   deletedAt DateTime?
 }
 
-enum Role {
+enum roleType {
   USER
   ADMIN
   STAFF
+}
+
+model Role {
+  id          String   @id @default(uuid())
+  name        String   @unique
+  description String?
+  type        roleType
+  permissions String[] // Assuming permissions are stored as an array of strings
+  users       Users[]  @relation // Relation to Users
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("roles")
+}
+
+enum MenuType {
+  TOPMENU
+  SIDEMENU
+  FOOTERMENU
 }
 
 model Menu {
@@ -47,10 +72,4 @@ model Menu {
   children    Menu[]   @relation("MenuSubmenus")
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt 
-}
-
-enum MenuType {
-  TOPMENU
-  SIDEMENU
-  FOOTERMENU
 }

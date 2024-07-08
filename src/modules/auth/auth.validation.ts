@@ -8,11 +8,7 @@ export const signupValidation = (data: IAuthSignupPayload): Joi.ValidationResult
     username: Joi.string().trim().required(),
     phone: Joi.string().trim().required(),
     email: Joi.string().lowercase().email().trim().required(),
-    password: Joi.string()
-      /* .regex(/^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/) */
-      .trim()
-      .required(),
-    confirmPassword: Joi.string().trim().required()
+    roleId: Joi.string().required(),    
   });
 
   return schema.validate(data);

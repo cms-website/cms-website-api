@@ -7,5 +7,6 @@ router.route("/getToken").post(authController.login);
 router.route("/logout").post(authController.logout);
 router.route("/forgetPassword").post(authController.forgetPassword);
 router.route("/resetPassword").post(authController.resetPassword);
+router.route("/changePassword").post(authController.changePassword);
 
-export default router;
+export default router; 

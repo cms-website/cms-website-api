@@ -3,7 +3,6 @@ import { HttpStatus } from "../enums";
 
 abstract class ApiResponse {
   constructor(protected status: HttpStatus, protected success: boolean, protected message: string) {}
-
   protected prepareResponse<T extends ApiResponse>(res: Response, response: T, headers: { [key: string]: string }): Response {
     return res.status(this.status).json(ApiResponse.sanitizeResponse(response));
   }
@@ -18,7 +17,6 @@ abstract class ApiResponse {
     // @ts-expect-error
     delete clone.status;
     for (const i in clone) if (typeof clone[i] === "undefined") delete clone[i];
-
     return clone;
   }
 }
