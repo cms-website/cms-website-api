@@ -305,7 +305,7 @@ export default {
             firstName: {
               type: "string",
               required: true,
-              example: "Krishana"
+              example: "Krishna"
             },
             lastName: {
               type: "string",
@@ -317,25 +317,15 @@ export default {
               required: true,
               example: "krimson"
             },
-            password: {
-              type: "string",
-              required: true,
-              example: "krimson@123456"
-            },
-            confirmPassword: {
-              type: "string",
-              required: true,
-              example: "krimson@123456"
-            },
             email: {
               type: "string",
               required: true,
-              example: "krimson@gmail.com"
+              example: "uniqkrimson100@gmail.com"
             },
             phone: {
               type: "string",
               required: true,
-              example: "9847053191"
+              example: "9800768098"
             },
             roleId: {
               type: "string",

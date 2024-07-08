@@ -14,7 +14,7 @@ CREATE TABLE "Users" (
     "status" BOOLEAN NOT NULL DEFAULT false,
     "roleId" TEXT,
     "email" TEXT NOT NULL,
-    "password" TEXT NOT NULL,
+    "password" TEXT,
     "avatar" TEXT,
     "deleted" BOOLEAN NOT NULL DEFAULT false,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,

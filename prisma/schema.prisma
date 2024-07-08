@@ -11,20 +11,25 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum userStatus {
+  INACTIVE
+  ACTIVE
+  DELETED
+  BLOCKED
+}
 model Users {
   id        String   @id @default(uuid())
   firstName String
   lastName  String
   username  String   @unique
   phone     String   @unique
-  status    Boolean  @default(false)
   roleId    String?  // Define as String
   role      Role?    @relation(fields: [roleId], references: [id])
   email     String   @unique
-  password  String
+  password  String?
+  status    userStatus
   avatar    String?
   deleted   Boolean  @default(false)
-
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
   deletedAt DateTime?

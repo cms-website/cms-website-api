@@ -46,8 +46,8 @@ export class AuthController {
     return new SuccessCreatedResponse<IAuthSignup>(AUTH_MESSAGE_CONSTANT.USER_CREATED_SUCCESSFULLY, data).sendResponse(res);
   }
   async changePassword(req:Request, res:Response, next: NextFunction) : Promise<Response>{
-    const { email,  newPassword } = req.body
-    const data = await authService.changePassword(email, newPassword)
+    const { userId,  newPassword } = req.body
+    const data = await authService.changePassword(userId, newPassword)
     return new SuccessCreatedResponse<IAuthSignup>(AUTH_MESSAGE_CONSTANT.USER_CREATED_SUCCESSFULLY, data).sendResponse(res);
   }
 }
