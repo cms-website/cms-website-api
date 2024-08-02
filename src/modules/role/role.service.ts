@@ -1,13 +1,17 @@
 import { Role } from "../../helpers";
 import { BadRequestError } from "../../common/utils";
 import { ROLE_MESSAGE_CONSTANT } from "src/common/constants";
+import {createRoleValidaton} from  "./role.validation"
 
 
 class RoleService {
     async create(reqBody: any): Promise<any> {
+      const { error, value } = createRoleValidaton(reqBody);
+    if (error) throw new BadRequestError(error.details[0].message);
+
       try {
         const role = await Role.create({
-          data: { ...reqBody },
+          data: {...reqBody},
           select: {
             id: true,
           }
@@ -15,7 +19,9 @@ class RoleService {
         if (!role) {
           throw new BadRequestError(ROLE_MESSAGE_CONSTANT.ROLE_NOT_FOUND);
         }
-        return role;
+        console.log(value, "role validated ")
+        console.log(reqBody, "role created ")
+        return value;
       } catch (error) {
         if (error instanceof BadRequestError) {
           throw error;

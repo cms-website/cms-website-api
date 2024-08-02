@@ -394,12 +394,12 @@ export default {
             email: {
               type: "string",
               required: true,
-              example: "krimson@gmail.com"
+              example: "uniqkrimson100@gmail.com"
             },
             password: {
               type: "string",
               required: true,
-              example: "krimson@123456"
+              example: "dinesh@84"
             }
           }
         },

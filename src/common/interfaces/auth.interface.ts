@@ -18,3 +18,4 @@ export interface IAuthSignup {
   createdAt: Date;
   updatedAt: Date;
 }
+

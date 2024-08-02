@@ -1,12 +1,14 @@
-import { BcryptHelper, Users} from "../../helpers";
+import { BcryptHelper, Users, Role} from "../../helpers";
 import { signupValidation } from "./auth.validation";
 import { AUTH_MESSAGE_CONSTANT } from "../../common/constants";
 import { IAuthSignupPayload, IAuthSignup } from "../../common/interfaces";
 import { BadRequestError, ConflictRequestError } from "../../common/utils";
-import jwt, {JwtPayload, JsonWebTokenError, TokenExpiredError } from "jsonwebtoken";
+import  { JsonWebTokenError, TokenExpiredError } from "jsonwebtoken";
 import { env } from "src/configs";
 import transporter from "src/helpers/nodemailer.helper";
 import compileEmailTemplate from "src/helpers/compile.email.template";
+import verifyJwtToken from "src/helpers/verifyJWT.token";
+import signInJWTToken from "src/helpers/signInJWT.token";
 class AuthService {
   async signup(reqBody: IAuthSignupPayload): Promise<IAuthSignup> {
     const { error, value } = signupValidation(reqBody);    
@@ -14,6 +16,14 @@ class AuthService {
     let userExits = await this.findUserByUnique({ email: value.email });
     if (userExits) throw new ConflictRequestError(AUTH_MESSAGE_CONSTANT.EMAIL_ALREADY_TAKEN);
     // const sanitizeUser = sanitizeFields<IAuthSignupPayload>(value, ["confirmPassword"]);
+
+    const role =  await Role.findUnique({
+      where:{
+        id: value.roleId
+      }
+    })
+    if (!role) throw new BadRequestError("Role  does not exist or enter valid role");
+
     const user = await Users.create({
       data: { ...value, status: 'INACTIVE' },
       select: {
@@ -40,7 +50,7 @@ class AuthService {
         twitter: 'emailTemplate?.facebook' ?? '',
         linkedIn: 'emailTemplate?.facebook' ?? '',
         mapUrl: 'emailTemplate?.facebook' ?? '',
-        senderName: 'emailTemplate?.facebook' ?? 'Amnil Technologies',
+        senderName: 'emailTemplate?.facebook' ?? 'Website Builder KRJ',
         supportMail: 'emailTemplate?.facebook' ?? '',
         address: 'emailTemplate?.facebook' ?? '',
         privacyPolicyUrl: 'emailTemplate?.facebook' ?? '',
@@ -71,31 +81,24 @@ class AuthService {
       }
     })
     if(!user) throw new BadRequestError(AUTH_MESSAGE_CONSTANT.USER_DOESNOT_EXIST)
-
+    if(user.status == "INACTIVE") throw new BadRequestError(AUTH_MESSAGE_CONSTANT.USER_INACTIVE)
     const isPasswordValid = await new BcryptHelper().verifyPassword(reqBody.password, user.password ?? '')
-
     if(!isPasswordValid) throw new BadRequestError(AUTH_MESSAGE_CONSTANT.INVALID_CREDENTIALS)
-
     const tokenPayload = {
       id: user.id,
       email: user.email,
       password:user.password
     };
-    const accessToken = jwt.sign(tokenPayload, env.jwtConfig.JWT_SECRET_ACCESSTOKEN_KEY, {expiresIn: "1h"})
-    const refreshToken = jwt.sign(tokenPayload, env.jwtConfig.JWT_SECRET_REFRESHTOKEN_KEY, {expiresIn: "75m"})
-    
+    const accessToken = await signInJWTToken(tokenPayload, env.jwtConfig.JWT_SECRET_ACCESSTOKEN_KEY,"60m")
+    const refreshToken = await signInJWTToken(tokenPayload, env.jwtConfig.JWT_SECRET_REFRESHTOKEN_KEY,"75m")  
     return {
       accessToken,refreshToken, user
     }
-
   }
-
   async logout(reqQuery: any):Promise<any>{
     return "hello"
   }
-
   async forgetPassword(email: any):Promise<any>{
-
     try {
       const user = await Users.findUnique({
         where: {
@@ -107,14 +110,13 @@ class AuthService {
       if (!user) {
         throw new BadRequestError("User not found");
       }
-
       const pin =  new BcryptHelper().generatePin();
       const tokenPayload = {
         userId: user.id,
         pin: pin,
         email: user.email, 
       };
-      const token = jwt.sign(tokenPayload, env.jwtConfig.JWT_SECRET_RESET_PIN_KEY, { expiresIn: "5m" });
+      const token = await signInJWTToken(tokenPayload, env.jwtConfig.JWT_SECRET_RESET_PIN_KEY, "5m")
       const mailOptions = {
         from: `${env.mailConfig.MAILING_USER}`,
         to: `${email}`,
@@ -127,14 +129,12 @@ class AuthService {
       throw new BadRequestError('Server error');
     }
   }
-
   async resetPassword(email:any, otp:any, token:any): Promise<any> {
     try {
       console.log(email, otp,token,"hello")
-        const decodedToken: any = jwt.verify(token, env.jwtConfig.JWT_SECRET_RESET_PIN_KEY) as JwtPayload;
+        const decodedToken: any = await verifyJwtToken(token, env.jwtConfig.JWT_SECRET_RESET_PIN_KEY)
         const isValidPin = decodedToken.pin == otp
         const userId = decodedToken.userId
-        console.log(isValidPin,"isvalid")
         return {Message:"validated", isValidPin, userId } 
     } catch (error) {
       if(error instanceof JsonWebTokenError){
@@ -142,11 +142,8 @@ class AuthService {
       }
       if(error instanceof TokenExpiredError){
         return {error}
-      }
-      
+      }  
     }
-
-     
   }
   async changePassword(id:any, newPassword:any): Promise<any> {
     try{
@@ -168,7 +165,5 @@ class AuthService {
     }
   }
 }
-
-
 const authService = new AuthService();
 export default authService;

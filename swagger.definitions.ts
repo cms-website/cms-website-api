@@ -3,6 +3,7 @@ import authApi from "src/modules/auth/api.definitions";
 import menuApi from "src/modules/menu/api.definitions";
 import roleApi from "src/modules/role/api.definitions";
 import userApi from "src/modules/user/api.definitions";
+import pageApi from "src/modules/page/api.definitions";
 
 export default {
   server: {
@@ -23,12 +24,15 @@ export default {
       ...menuApi.server.tags,
       ...roleApi.server.tags,
       ...userApi.server.tags,
+      ...pageApi.server.tags,
+
     ],
     paths: {
       ...authApi.server.paths,
       ...menuApi.server.paths,
       ...roleApi.server.paths,
       ...userApi.server.paths,
+      ...pageApi.server.paths,
     },
     components: {
       schemas: {
@@ -43,6 +47,7 @@ export default {
         ...menuApi.server.components.schemas,
         ...roleApi.server.components.schemas,
         ...userApi.server.components.schemas,
+        ...pageApi.server.components.schemas,
       },
       securitySchemes: {
         bearerAuth: {

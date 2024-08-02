@@ -2,68 +2,40 @@ export default {
     server: {
       tags: [
         {
-          name: "Role",
-          description: "API for managing roles"
+          name: "Pages",
+          description: "API for managing pages"
         }
       ],
       paths: {
-        "/role": {
-            get: {
-              security: [
-                {
-                  bearerAuth: []
-                }
-              ],
-              tags: ["Role"],
-              summary: "Get all roles",
-              description: "API to fetch all roles",
-              operationId: "getAllRoles",
-              responses: {
-                200: {
-                  description: "Successful operation",
-                  content: {
-                    "application/json": {
-                      schema: {
-                        type: "array",
-                        items: {
-                          $ref: "#/components/schemas/GetAllRolesResponse"
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          },
-        "/role/create": {
+        "/page/create": {
           post: {
             security: [
               {
                 bearerAuth: []
               }
             ],
-            tags: ["Role"],
-            summary: "Role create API",
-            description: "API for creating a role",
-            operationId: "roleCreate",
+            tags: ["Pages"],
+            summary: "Create Page API",
+            description: "API for creating a page",
+            operationId: "pageCreate",
             requestBody: {
-              description: "Payload for creating a role",
+              description: "Payload for creating a page",
               required: true,
               content: {
                 "application/json": {
                   schema: {
-                    $ref: "#/components/schemas/CreateRoleRequest"
+                    $ref: "#/components/schemas/CreatePageRequest"
                   }
                 }
               }
             },
             responses: {
               201: {
-                description: "Role created successfully",
+                description: "Page created successfully",
                 content: {
                   "application/json": {
                     schema: {
-                      $ref: "#/components/schemas/CreateRoleResponse"
+                      $ref: "#/components/schemas/CreatePageResponse"
                     }
                   }
                 }
@@ -81,7 +53,7 @@ export default {
                         },
                         message: {
                           type: "string",
-                          example: "Unable to create role"
+                          example: "Unable to create page"
                         }
                       }
                     }
@@ -91,26 +63,54 @@ export default {
             }
           }
         },
-        "/role/{id}": {
+        "/pages": {
           get: {
             security: [
               {
                 bearerAuth: []
               }
             ],
-            tags: ["Role"],
-            summary: "Get role by ID",
-            description: "API to fetch a role by ID",
-            operationId: "getRoleById",
+            tags: ["Pages"],
+            summary: "Get all pages",
+            description: "API to fetch all pages",
+            operationId: "getAllPages",
+            responses: {
+              200: {
+                description: "Successful operation",
+                content: {
+                  "application/json": {
+                    schema: {
+                      type: "array",
+                      items: {
+                        $ref: "#/components/schemas/GetPage"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "/page/{id}": {
+          get: {
+            security: [
+              {
+                bearerAuth: []
+              }
+            ],
+            tags: ["Pages"],
+            summary: "Get page by ID",
+            description: "API to fetch a page by its ID",
+            operationId: "getPageById",
             parameters: [
               {
                 name: "id",
                 in: "path",
                 required: true,
-                description: "ID of the role to fetch",
                 schema: {
                   type: "string"
-                }
+                },
+                description: "ID of the page to fetch"
               }
             ],
             responses: {
@@ -119,13 +119,13 @@ export default {
                 content: {
                   "application/json": {
                     schema: {
-                      $ref: "#/components/schemas/GetRoleResponse"
+                      $ref: "#/components/schemas/GetPage"
                     }
                   }
                 }
               },
               404: {
-                description: "Role not found",
+                description: "Page not found",
                 content: {
                   "application/json": {
                     schema: {
@@ -137,7 +137,7 @@ export default {
                         },
                         message: {
                           type: "string",
-                          example: "Role not found"
+                          example: "Page not found"
                         }
                       }
                     }
@@ -152,39 +152,39 @@ export default {
                 bearerAuth: []
               }
             ],
-            tags: ["Role"],
-            summary: "Update role by ID",
-            description: "API to update a role by ID",
-            operationId: "updateRoleById",
+            tags: ["Pages"],
+            summary: "Update page by ID",
+            description: "API to update a page by its ID",
+            operationId: "updatePageById",
             parameters: [
               {
                 name: "id",
                 in: "path",
                 required: true,
-                description: "ID of the role to update",
                 schema: {
                   type: "string"
-                }
+                },
+                description: "ID of the page to update"
               }
             ],
             requestBody: {
-              description: "Payload for updating a role",
+              description: "Payload for updating a page",
               required: true,
               content: {
                 "application/json": {
                   schema: {
-                    $ref: "#/components/schemas/UpdateRoleRequest"
+                    $ref: "#/components/schemas/UpdatePageRequest"
                   }
                 }
               }
             },
             responses: {
               200: {
-                description: "Role updated successfully",
+                description: "Page updated successfully",
                 content: {
                   "application/json": {
                     schema: {
-                      $ref: "#/components/schemas/UpdateRoleResponse"
+                      $ref: "#/components/schemas/UpdatePageResponse"
                     }
                   }
                 }
@@ -202,7 +202,7 @@ export default {
                         },
                         message: {
                           type: "string",
-                          example: "Unable to update role"
+                          example: "Unable to update page"
                         }
                       }
                     }
@@ -210,7 +210,7 @@ export default {
                 }
               },
               404: {
-                description: "Role not found",
+                description: "Page not found",
                 content: {
                   "application/json": {
                     schema: {
@@ -222,7 +222,7 @@ export default {
                         },
                         message: {
                           type: "string",
-                          example: "Role not found"
+                          example: "Page not found"
                         }
                       }
                     }
@@ -237,24 +237,24 @@ export default {
                 bearerAuth: []
               }
             ],
-            tags: ["Role"],
-            summary: "Delete role by ID",
-            description: "API to delete a role by ID",
-            operationId: "deleteRoleById",
+            tags: ["Pages"],
+            summary: "Delete page by ID",
+            description: "API to delete a page by its ID",
+            operationId: "deletePageById",
             parameters: [
               {
                 name: "id",
                 in: "path",
                 required: true,
-                description: "ID of the role to delete",
                 schema: {
                   type: "string"
-                }
+                },
+                description: "ID of the page to delete"
               }
             ],
             responses: {
               200: {
-                description: "Role deleted successfully",
+                description: "Page deleted successfully",
                 content: {
                   "application/json": {
                     schema: {
@@ -266,7 +266,7 @@ export default {
                         },
                         message: {
                           type: "string",
-                          example: "Role deleted successfully"
+                          example: "Page deleted successfully"
                         }
                       }
                     }
@@ -274,7 +274,7 @@ export default {
                 }
               },
               404: {
-                description: "Role not found",
+                description: "Page not found",
                 content: {
                   "application/json": {
                     schema: {
@@ -286,7 +286,7 @@ export default {
                         },
                         message: {
                           type: "string",
-                          example: "Role not found"
+                          example: "Page not found"
                         }
                       }
                     }
@@ -299,58 +299,118 @@ export default {
       },
       components: {
         schemas: {
-          CreateRoleRequest: {
+          CreatePageRequest: {
             type: "object",
             properties: {
               name: {
                 type: "string",
                 required: true,
-                example: "Admin"
+                example: "HomePage"
+              },
+              systemName: {
+                type: "string",
+                required: true,
+                example: "home_page"
               },
               description: {
                 type: "string",
                 required: false,
-                example: "Administrator role with all permissions"
+                example: "This is the homepage of the website."
               },
-              type: {
+              title: {
                 type: "string",
                 required: true,
-                example: "ADMIN"
+                example: "Welcome to Our Website"
               },
-              permissions: {
+              subTitle: {
+                type: "string",
+                required: false,
+                example: "Explore our features"
+              },
+              sections: {
                 type: "array",
                 items: {
-                  type: "string"
-                },
-                example: ["read", "write", "delete"]
+                  $ref: "#/components/schemas/PageSection"
+                }
               }
             }
           },
-          GetRoleResponse: {
+          CreatePageResponse: {
+            type: "object",
+            properties: {
+              success: {
+                type: "boolean",
+                example: true
+              },
+              message: {
+                type: "string",
+                example: "Page created successfully"
+              },
+              data: {
+                type: "object",
+                properties: {
+                  name: {
+                    type: "string",
+                    example: "HomePage"
+                  },
+                  systemName: {
+                    type: "string",
+                    example: "home_page"
+                  },
+                  description: {
+                    type: "string",
+                    example: "This is the homepage of the website."
+                  },
+                  title: {
+                    type: "string",
+                    example: "Welcome to Our Website"
+                  },
+                  subTitle: {
+                    type: "string",
+                    example: "Explore our features"
+                  },
+                  sections: {
+                    type: "array",
+                    items: {
+                      $ref: "#/components/schemas/PageSection"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          GetPage: {
             type: "object",
             properties: {
               id: {
                 type: "string",
-                example: "123e4567-e89b-12d3-a456-426614174000"
+                example: "1"
               },
               name: {
                 type: "string",
-                example: "Admin"
+                example: "HomePage"
+              },
+              systemName: {
+                type: "string",
+                example: "home_page"
               },
               description: {
                 type: "string",
-                example: "Administrator role with all permissions"
+                example: "This is the homepage of the website."
               },
-              type: {
+              title: {
                 type: "string",
-                example: "admin"
+                example: "Welcome to Our Website"
               },
-              permissions: {
+              subTitle: {
+                type: "string",
+                example: "Explore our features"
+              },
+              sections: {
                 type: "array",
                 items: {
-                  type: "string"
-                },
-                example: ["read", "write", "delete"]
+                  $ref: "#/components/schemas/PageSection"
+                }
               },
               createdAt: {
                 type: "string",
@@ -362,83 +422,43 @@ export default {
               }
             }
           },
-          CreateRoleResponse: {
-            type: "object",
-            properties: {
-              success: {
-                type: "boolean",
-                example: true
-              },
-              message: {
-                type: "string",
-                example: "Role created successfully"
-              },
-              data: {
-                type: "object",
-                properties: {
-                  id: {
-                    type: "string",
-                    example: "123e4567-e89b-12d3-a456-426614174000"
-                  },
-                  name: {
-                    type: "string",
-                    example: "Admin"
-                  },
-                  description: {
-                    type: "string",
-                    example: "Administrator role with all permissions"
-                  },
-                  type: {
-                    type: "string",
-                    example: "admin"
-                  },
-                  permissions: {
-                    type: "array",
-                    items: {
-                      type: "string"
-                    },
-                    example: ["read", "write", "delete"]
-                  },
-                  createdAt: {
-                    type: "string",
-                    example: "2023-06-18T17:35:47.699Z"
-                  },
-                  updatedAt: {
-                    type: "string",
-                    example: "2023-06-18T17:35:47.699Z"
-                  }
-                }
-              }
-            }
-          },
-          UpdateRoleRequest: {
+          UpdatePageRequest: {
             type: "object",
             properties: {
               name: {
                 type: "string",
                 required: true,
-                example: "Admin"
+                example: "HomePage"
+              },
+              systemName: {
+                type: "string",
+                required: true,
+                example: "home_page"
               },
               description: {
                 type: "string",
                 required: false,
-                example: "Administrator role with all permissions"
+                example: "This is the homepage of the website."
               },
-              type: {
+              title: {
                 type: "string",
                 required: true,
-                example: "admin"
+                example: "Welcome to Our Website"
               },
-              permissions: {
+              subTitle: {
+                type: "string",
+                required: false,
+                example: "Explore our features"
+              },
+              sections: {
                 type: "array",
                 items: {
-                  type: "string"
-                },
-                example: ["read", "write", "delete"]
+                  $ref: "#/components/schemas/PageSection"
+                }
               }
             }
           },
-          UpdateRoleResponse: {
+          UpdatePageResponse: {
             type: "object",
             properties: {
               success: {
@@ -447,79 +467,55 @@ export default {
               },
               message: {
                 type: "string",
-                example: "Role updated successfully"
+                example: "Page updated successfully"
               },
               data: {
                 type: "object",
                 properties: {
-                  id: {
-                    type: "string",
-                    example: "123e4567-e89b-12d3-a456-426614174000"
-                  },
                   name: {
                     type: "string",
-                    example: "Admin"
+                    example: "HomePage"
+                  },
+                  systemName: {
+                    type: "string",
+                    example: "home_page"
                   },
                   description: {
                     type: "string",
-                    example: "Administrator role with all permissions"
+                    example: "This is the homepage of the website."
                   },
-                  type: {
+                  title: {
                     type: "string",
-                    example: "admin"
+                    example: "Welcome to Our Website"
                   },
-                  permissions: {
+                  subTitle: {
+                    type: "string",
+                    example: "Explore our features"
+                  },
+                  sections: {
                     type: "array",
                     items: {
-                      type: "string"
-                    },
-                    example: ["read", "write", "delete"]
-                  },
-                  createdAt: {
-                    type: "string",
-                    example: "2023-06-18T17:35:47.699Z"
-                  },
-                  updatedAt: {
-                    type: "string",
-                    example: "2023-06-18T17:35:47.699Z"
+                      $ref: "#/components/schemas/PageSection"
+                    }
                   }
                 }
               }
             }
           },
-          GetAllRolesResponse: {
+          PageSection: {
             type: "object",
             properties: {
-              id: {
-                type: "string",
-                example: "123e4567-e89b-12d3-a456-426614174000"
-              },
               name: {
                 type: "string",
-                example: "Admin"
+                example: "Header Section"
               },
-              description: {
+              content: {
                 type: "string",
-                example: "Administrator role with all permissions"
+                example: "This is the header section content."
               },
-              type: {
-                type: "string",
-                example: "admin"
-              },
-              permissions: {
-                type: "array",
-                items: {
-                  type: "string"
-                },
-                example: ["read", "write", "delete"]
-              },
-              createdAt: {
-                type: "string",
-                example: "2023-06-18T17:35:47.699Z"
-              },
-              updatedAt: {
-                type: "string",
-                example: "2023-06-18T17:35:47.699Z"
+              order: {
+                type: "integer",
+                example: 1
               }
             }
           }

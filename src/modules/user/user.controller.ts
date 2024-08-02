@@ -7,26 +7,27 @@ import { catchAsyncHandler } from "src/helpers";
 
 export class userController {
   async getAllUser(req: Request, res: Response, next: NextFunction): Promise<Response> {
-    const users = await userService.getAllUser();
+    console.log(req.query,"req")
+    const users = await userService.getAllUser(req.query);
     return new SuccessResponse<IAuthSignup>
     (USER_MESSAGE_CONSTANT.ALL_USER_FETCHED_SUCCESSFULLY, users)
     .sendResponse(res);
   }
   async getUserById(req: Request, res: Response, next: NextFunction): Promise<Response> {
-    const user = await userService.getUserById(req.params.id);
+    const user = await userService.getUser(req.params.id);
     if(!user) throw new Error("User not Found")
     return new SuccessResponse<IAuthSignup>(USER_MESSAGE_CONSTANT.USER_FETCHED_SUCCESSFULLY, user).sendResponse(res);
   }
   async deleteUserById(req: Request, res: Response, next: NextFunction): Promise<Response> {
-    const user = await userService.getUserById(req.params.id);
+    const user = await userService.deleteUser(req.params.id);
     return new SuccessResponse<IAuthSignup>(USER_MESSAGE_CONSTANT.USER_DELETED_SUCCESSFULLY, user).sendResponse(res);
   }
   async updateUserById(req: Request, res: Response, next: NextFunction): Promise<Response> {
-    const user = await userService.getUserById(req.params.id);
+    const user = await userService.updateUser(req);
     return new SuccessResponse<IAuthSignup>(USER_MESSAGE_CONSTANT.USER_UPDATED_SUCCESSFULLY, user).sendResponse(res);
   }
   async updateUserRoleById(req: Request, res: Response, next: NextFunction): Promise<Response> {
-    const user = await userService.getUserById(req.params.id);
+    const user = await userService.updateUserRole(req.params.id, req.body);
     return new SuccessResponse<IAuthSignup>(USER_MESSAGE_CONSTANT.USER_STATUS_UPDATED_SUCCESSFULLY, user).sendResponse(res);
   }
 } 

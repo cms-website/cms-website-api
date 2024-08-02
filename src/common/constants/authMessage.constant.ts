@@ -4,12 +4,13 @@ export const AUTH_MESSAGE_CONSTANT = {
   USERNAME_ALREADY_TAKEN: "This username was already taken. Please choose different username.",
   PASSWORD_AND_CONFIRM_PASSWORD_NOT_MATCHED: "Password and confirm password doesn't matched.",
   UNABLE_TO_CREATE_USER: "Unable to create user.",
-  USER_CREATED_SUCCESSFULLY: "User created Successfully.",
+  USER_CREATED_SUCCESSFULLY: "User created Successfully and link is being sent to your email please do update your password.",
   LOGIN_SUCCESS: "YOU LOGGED IS SUCCESSFULLY",
-  INVALID_CREDENTIALS: "Invalid Credentials",
+  INVALID_CREDENTIALS: "Invalid Credentials Email or Password does not matched",
   UNABLE_TO_LOGIN: "Unable to login",
   USER_DOESNOT_EXIST:"User Does not exist",
   USER_LOGIN_SUCCESS:"User logged in successfully",
+  USER_INACTIVE:"User is inactive please update your password via email to login",
 };
 
 export const USER_MESSAGE_CONSTANT = {
