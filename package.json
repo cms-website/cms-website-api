@@ -8,6 +8,7 @@
   "scripts": {
     "dev": "nodemon server.ts",
     "start": "node build/server.js",
+    "seed" :"ts-node prisma/seed.ts",
     "prod": "rimraf build && tsc && tsc-alias",
     "prepare": "husky install && chmod +x .husky/*",
     "test": "jest --watchAll --no-cache --detectOpenHandles -c ./jest.config.ts",

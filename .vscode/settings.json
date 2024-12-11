@@ -4,5 +4,8 @@
     "middlewares",
     "thaqurie"
   ],
-  "editor.fontSize": 16
+  "editor.fontSize": 16,
+  "conventionalCommits.scopes": [
+    "Seeding admin addition"
+  ]
 }
